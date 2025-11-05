@@ -1,0 +1,135 @@
+
+.TH HSH 1 "November 2024" "1.0" "Simple Shell Manual"
+
+.SH NAME
+
+hsh \- simple UNIX command interpreter
+
+.SH SYNOPSIS
+
+.B hsh
+
+[command_string]
+
+.SH DESCRIPTION
+
+.B hsh
+
+is a simple command interpreter that executes commands read from standard input or from a file.
+
+.SH INVOCATION
+
+.B hsh
+
+can be invoked both interactively and non-interactively.
+
+If invoked with standard input connected to a terminal,
+
+.B hsh
+
+displays a prompt and reads commands from the terminal.
+
+.SH COMMAND EXECUTION
+
+After receiving a command,
+
+.B hsh
+
+tokenizes it into words using spaces as delimiters.
+
+The first word is the command, and the remaining words are arguments.
+
+.B hsh
+
+then searches for the command:
+
+.RS
+
+- If the command contains a slash (/), it is executed directly
+
+.RE
+
+.RS
+
+- Otherwise, the shell searches for it in the directories listed in PATH
+
+.RE
+
+.SH BUILT-IN COMMANDS
+
+.TP
+
+.B exit
+
+Exit the shell
+
+.TP
+
+.B env
+
+Print the environment variables
+
+.SH RETURN VALUE
+
+.B hsh
+
+returns the exit status of the last command executed.
+
+.SH EXAMPLES
+
+.PP
+
+Interactive mode:
+
+.RS
+
+.nf
+
+$ ./hsh
+
+($) /bin/ls
+
+hsh main.c shell.c
+
+($) exit
+
+$
+
+.fi
+
+.RE
+
+.PP
+
+Non-interactive mode:
+
+.RS
+
+.nf
+
+$ echo "/bin/ls" | ./hsh
+
+hsh main.c shell.c
+
+$
+
+.fi
+
+.RE
+
+.SH SEE ALSO
+
+sh(1), bash(1), dash(1)
+
+.SH BUGS
+
+No known bugs.
+
+.SH AUTHORS
+
+Norah Mohammed Alnujidi
+
+.br
+
+Rinad Fahad Alzuaybir
+
