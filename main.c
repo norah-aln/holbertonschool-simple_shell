@@ -10,6 +10,7 @@
 int main(int argc, char **argv)
 {
 	char *input = NULL;
+	char *trimmed_input;
 	size_t len = 0;
 	ssize_t nread;
 
@@ -32,8 +33,10 @@ int main(int argc, char **argv)
 		if (input[nread - 1] == '\n')
 			input[nread - 1] = '\0';
 
-		if (_strlen(input) > 0)
-			execute_command(input, argv[0]);
+		trimmed_input = trim_whitespace(input);
+
+		if (!is_empty_line(trimmed_input))
+			execute_command(trimmed_input, argv[0]);
 	}
 
 	free(input);

@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <ctype.h>
 
 extern char **environ;
 
@@ -15,10 +16,13 @@ extern char **environ;
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);
 char *_strcpy(char *dest, char *src);
+char *_strdup(char *str);
+
+/* Helper functions */
+char *trim_whitespace(char *str);
+int is_empty_line(char *str);
 
 /* Main shell functions */
-void display_prompt(void);
-char *read_input(void);
 void execute_command(char *command, char *program_name);
 
 #endif

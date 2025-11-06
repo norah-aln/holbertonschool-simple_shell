@@ -12,6 +12,9 @@ void execute_command(char *command, char *program_name)
 	char *args[2];
 	struct stat st;
 
+	if (command == NULL || _strlen(command) == 0)
+		return;
+
 	if (stat(command, &st) != 0)
 	{
 		write(STDERR_FILENO, program_name, _strlen(program_name));
