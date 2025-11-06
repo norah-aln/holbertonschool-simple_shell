@@ -9,10 +9,9 @@
  */
 int main(int argc, char **argv)
 {
-	char *input = NULL;
-	char *trimmed_input;
+	char *line = NULL;
 	size_t len = 0;
-	ssize_t nread;
+	ssize_t read;
 
 	(void)argc;
 
@@ -21,24 +20,21 @@ int main(int argc, char **argv)
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "#cisfun$ ", 9);
 
-		nread = getline(&input, &len, stdin);
-
-		if (nread == -1)
+		read = getline(&line, &len, stdin);
+		if (read == -1)
 		{
+			free(line);
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
-			break;
+			exit(EXIT_SUCCESS);
 		}
 
-		if (input[nread - 1] == '\n')
-			input[nread - 1] = '\0';
+		if (line[read - 1] == '\n')
+			line[read - 1] = '\0';
 
-		trimmed_input = trim_whitespace(input);
-
-		if (!is_empty_line(trimmed_input))
-			execute_command(trimmed_input, argv[0]);
+		execute_command(line, argv);
 	}
 
-	free(input);
+	free(line);
 	return (0);
 }
