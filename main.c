@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
 	char *line = NULL;
 	size_t len = 0;
-	ssize_t read;
+	ssize_t nread;
 
 	(void)argc;
 
@@ -20,8 +20,8 @@ int main(int argc, char **argv)
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "#cisfun$ ", 9);
 
-		read = getline(&line, &len, stdin);
-		if (read == -1)
+		nread = getline(&line, &len, stdin);
+		if (nread == -1)
 		{
 			free(line);
 			if (isatty(STDIN_FILENO))
@@ -29,8 +29,8 @@ int main(int argc, char **argv)
 			exit(EXIT_SUCCESS);
 		}
 
-		if (line[read - 1] == '\n')
-			line[read - 1] = '\0';
+		if (line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
 
 		execute_command(line, argv);
 	}

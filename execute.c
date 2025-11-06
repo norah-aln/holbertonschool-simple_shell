@@ -1,50 +1,46 @@
 #include "shell.h"
 
 /**
- * is_whitespace - checks if character is whitespace
+ * is_space - checks if character is space or tab
  * @c: character to check
  *
- * Return: 1 if whitespace, 0 otherwise
+ * Return: 1 if space, 0 otherwise
  */
-int is_whitespace(char c)
+int is_space(char c)
 {
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+	return (c == ' ' || c == '\t');
 }
 
 /**
- * skip_spaces - skips leading spaces in string
- * @str: string to process
+ * trim_command - removes leading and trailing spaces from command
+ * @cmd: command string
  *
- * Return: pointer to first non-space character
+ * Return: pointer to trimmed string
  */
-char *skip_spaces(char *str)
+char *trim_command(char *cmd)
 {
-	while (*str && is_whitespace(*str))
-		str++;
-	return (str);
-}
+	char *end;
 
-/**
- * is_empty - checks if string is empty or only whitespace
- * @str: string to check
- *
- * Return: 1 if empty, 0 otherwise
- */
-int is_empty(char *str)
-{
-	while (*str)
+	while (is_space(*cmd))
+		cmd++;
+
+	if (*cmd == '\0')
+		return (cmd);
+
+	end = cmd + _strlen(cmd) - 1;
+	while (end > cmd && is_space(*end))
 	{
-		if (!is_whitespace(*str))
-			return (0);
-		str++;
+		*end = '\0';
+		end--;
 	}
-	return (1);
+
+	return (cmd);
 }
 
 /**
  * execute_command - executes a command
  * @command: command to execute
- * @argv: argument vector for error messages
+ * @argv: argument vector
  */
 void execute_command(char *command, char **argv)
 {
@@ -54,9 +50,9 @@ void execute_command(char *command, char **argv)
 	char *cmd;
 	struct stat st;
 
-	cmd = skip_spaces(command);
+	cmd = trim_command(command);
 
-	if (is_empty(cmd))
+	if (_strlen(cmd) == 0)
 		return;
 
 	if (stat(cmd, &st) != 0)

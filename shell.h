@@ -11,11 +11,7 @@
 
 extern char **environ;
 
-/* String functions */
 int _strlen(char *s);
-int _strcmp(char *s1, char *s2);
-
-/* Main shell function */
 void execute_command(char *command, char **argv);
 
 #endif
