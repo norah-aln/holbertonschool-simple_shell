@@ -38,16 +38,18 @@ char *trim_command(char *cmd)
 }
 
 /**
- * execute_command - executes a command
- * @command: command to execute
- * @argv: argument vector
+ * execute_command - executes a command (supports simple args)
+ * @command: command to execute (may contain arguments)
+ * @argv: argument vector of the shell (used for error prefix)
  */
 void execute_command(char *command, char **argv)
 {
 	pid_t pid;
 	int status;
-	char *args[2];
 	char *cmd;
+	char *token;
+	char *args[128];
+	int i = 0;
 	struct stat st;
 
 	cmd = trim_command(command);
@@ -55,15 +57,26 @@ void execute_command(char *command, char **argv)
 	if (_strlen(cmd) == 0)
 		return;
 
-	if (stat(cmd, &st) != 0)
+	/* Tokenize command by spaces/tabs into args[] */
+	token = strtok(cmd, " \t");
+	while (token != NULL && i < 127)
+	{
+		args[i++] = token;
+		token = strtok(NULL, " \t");
+	}
+	args[i] = NULL;
+
+	/* Ensure there is at least a program name */
+	if (i == 0)
+		return;
+
+	/* Check that the program (as given) exists (we expect a path or ./prog) */
+	if (stat(args[0], &st) != 0)
 	{
 		write(STDERR_FILENO, argv[0], _strlen(argv[0]));
 		write(STDERR_FILENO, ": No such file or directory\n", 28);
 		return;
 	}
-
-	args[0] = cmd;
-	args[1] = NULL;
 
 	pid = fork();
 	if (pid == -1)
@@ -74,14 +87,16 @@ void execute_command(char *command, char **argv)
 
 	if (pid == 0)
 	{
-		if (execve(cmd, args, environ) == -1)
+		/* Child: execute program with its arguments, pass environ */
+		if (execve(args[0], args, environ) == -1)
 		{
 			perror(argv[0]);
-			exit(EXIT_FAILURE);
+			_exit(EXIT_FAILURE);
 		}
 	}
 	else
 	{
+		/* Parent: wait for the child to finish */
 		wait(&status);
 	}
 }
