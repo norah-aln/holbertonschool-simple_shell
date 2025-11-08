@@ -1,102 +1,58 @@
 #include "shell.h"
 
-/**
- * is_space - checks if character is space or tab
- * @c: character to check
- *
- * Return: 1 if space, 0 otherwise
- */
-int is_space(char c)
-{
-	return (c == ' ' || c == '\t');
-}
+extern char **environ;
 
 /**
- * trim_command - removes leading and trailing spaces from command
- * @cmd: command string
- *
- * Return: pointer to trimmed string
+ * trim_command - remove leading/trailing spaces
+ * @cmd: input command
+ * Return: trimmed command
  */
 char *trim_command(char *cmd)
 {
+	char *start = cmd;
 	char *end;
 
-	while (is_space(*cmd))
-		cmd++;
+	while (*start == ' ')
+		start++;
 
-	if (*cmd == '\0')
-		return (cmd);
-
-	end = cmd + _strlen(cmd) - 1;
-	while (end > cmd && is_space(*end))
-	{
-		*end = '\0';
+	end = start + _strlen(start) - 1;
+	while (end > start && *end == ' ')
 		end--;
-	}
 
-	return (cmd);
+	*(end + 1) = '\0';
+	return (start);
 }
 
 /**
- * execute_command - executes a command (supports simple args)
- * @command: command to execute (may contain arguments)
- * @argv: argument vector of the shell (used for error prefix)
+ * execute_command - run a command using fork & execve
+ * @args: command and arguments
  */
-void execute_command(char *command, char **argv)
+void execute_command(char **args)
 {
 	pid_t pid;
-	int status;
-	char *cmd;
-	char *token;
-	char *args[128];
-	int i = 0;
-	struct stat st;
+	char *full_path;
 
-	cmd = trim_command(command);
-
-	if (_strlen(cmd) == 0)
-		return;
-
-	/* Tokenize command by spaces/tabs into args[] */
-	token = strtok(cmd, " \t");
-	while (token != NULL && i < 127)
+	full_path = find_path(args[0]);
+	if (!full_path)
 	{
-		args[i++] = token;
-		token = strtok(NULL, " \t");
-	}
-	args[i] = NULL;
-
-	/* Ensure there is at least a program name */
-	if (i == 0)
-		return;
-
-	/* Check that the program (as given) exists (we expect a path or ./prog) */
-	if (stat(args[0], &st) != 0)
-	{
-		write(STDERR_FILENO, argv[0], _strlen(argv[0]));
-		write(STDERR_FILENO, ": No such file or directory\n", 28);
+		write(STDERR_FILENO, args[0], _strlen(args[0]));
+		write(STDERR_FILENO, ": command not found\n", 21);
 		return;
 	}
 
 	pid = fork();
-	if (pid == -1)
-	{
-		perror(argv[0]);
-		return;
-	}
-
 	if (pid == 0)
 	{
-		/* Child: execute program with its arguments, pass environ */
-		if (execve(args[0], args, environ) == -1)
-		{
-			perror(argv[0]);
-			_exit(EXIT_FAILURE);
-		}
+		if (execve(full_path, args, environ) == -1)
+			perror("execve");
+		free(full_path);
+		exit(EXIT_FAILURE);
 	}
+	else if (pid > 0)
+		wait(NULL);
 	else
-	{
-		/* Parent: wait for the child to finish */
-		wait(&status);
-	}
+		perror("fork");
+
+	free(full_path);
 }
+

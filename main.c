@@ -2,21 +2,15 @@
 
 /**
  * main - Entry point for simple shell
- * @argc: argument count
- * @argv: argument vector
- * @envp: environment variables
  *
  * Return: Always 0
  */
-int main(int argc, char **argv, char **envp)
+int main(void)
 {
-	char *line = NULL, *cmd_path = NULL;
+	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
 	char **args;
-
-	(void)argc;
-	(void)argv;
 
 	while (1)
 	{
@@ -26,43 +20,32 @@ int main(int argc, char **argv, char **envp)
 		read = getline(&line, &len, stdin);
 		if (read == -1)
 		{
-			if (isatty(STDIN_FILENO))
-				write(STDOUT_FILENO, "\n", 1);
+			free(line);
 			break;
 		}
-		if (line[read - 1] == '\n')
-			line[read - 1] = '\0';
 
-		args = tokenize_line(line);
-		if (!args || !args[0])
+		line[_strlen(line) - 1] = '\0'; /* remove \n */
+		args = parse_command(line);
+
+		if (args[0] == NULL)
 		{
-			free_args(args);
+			free(args);
 			continue;
 		}
 
-		if (builtin_exit(args))
+		if (_strcmp(args[0], "exit") == 0)
 		{
-			free_args(args);
+			free(args);
 			break;
 		}
-		if (builtin_env(args, envp))
-		{
-			free_args(args);
-			continue;
-		}
+		else if (_strcmp(args[0], "env") == 0)
+			print_env();
+		else
+			execute_command(args);
 
-		cmd_path = find_path(args[0], envp);
-		if (!cmd_path)
-		{
-			perror(args[0]);
-			free_args(args);
-			continue;
-		}
-
-		execute_cmd(cmd_path, args, envp);
-		free(cmd_path);
-		free_args(args);
+		free(args);
 	}
+
 	free(line);
 	return (0);
 }

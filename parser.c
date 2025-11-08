@@ -1,26 +1,27 @@
 #include "shell.h"
 
-char **parse_input(char *input)
+/**
+ * parse_command - split command by spaces
+ * @line: input line
+ * Return: array of arguments
+ */
+char **parse_command(char *line)
 {
-char **args;
-char *token;
-int i = 0;
-int bufsize = 64;
+	char **args;
+	char *token;
+	int i = 0;
 
-args = malloc(sizeof(char *) * bufsize);
-if (!args)
-{
-perror("malloc");
-exit(EXIT_FAILURE);
+	args = malloc(64 * sizeof(char *));
+	if (!args)
+		return (NULL);
+
+	token = strtok(line, " ");
+	while (token != NULL)
+	{
+		args[i++] = token;
+		token = strtok(NULL, " ");
+	}
+	args[i] = NULL;
+	return (args);
 }
 
-token = strtok(input, " \t");
-while (token != NULL)
-{
-args[i++] = token;
-token = strtok(NULL, " \t");
-}
-args[i] = NULL;
-
-return args;
-}

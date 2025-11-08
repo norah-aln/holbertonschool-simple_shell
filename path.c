@@ -1,46 +1,35 @@
 #include "shell.h"
 
 /**
- * find_path - finds full path of a command using PATH
- * @cmd: command name
- * @envp: environment variables
- * Return: string with full path or NULL if not found
+ * find_path - search command in PATH
+ * @cmd: command to find
+ * Return: full path or NULL
  */
-char *find_path(char *cmd, char **envp)
+char *find_path(char *cmd)
 {
-	int i = 0;
-	char *path_env = NULL, *path_copy, *dir;
+	char *path_env, *path_copy, *dir;
 	char full_path[1024];
+	struct stat st;
 
-	if (strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0)
-			return (strdup(cmd));
-		else
-			return (NULL);
-	}
+	if (stat(cmd, &st) == 0)
+		return (_strdup(cmd));
 
-	while (envp[i])
-	{
-		if (strncmp(envp[i], "PATH=", 5) == 0)
-		{
-			path_env = envp[i] + 5;
-			break;
-		}
-		i++;
-	}
+	path_env = getenv("PATH");
 	if (!path_env)
 		return (NULL);
 
-	path_copy = strdup(path_env);
+	path_copy = _strdup(path_env);
 	dir = strtok(path_copy, ":");
 	while (dir)
 	{
-		snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
-		if (access(full_path, X_OK) == 0)
+		_strcpy(full_path, dir);
+		_strcat(full_path, "/");
+		_strcat(full_path, cmd);
+
+		if (stat(full_path, &st) == 0)
 		{
 			free(path_copy);
-			return (strdup(full_path));
+			return (_strdup(full_path));
 		}
 		dir = strtok(NULL, ":");
 	}
