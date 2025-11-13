@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
-extern char **environ;
-
 /**
  * shell_exec - execute program at path with args
  * @s: shell struct
