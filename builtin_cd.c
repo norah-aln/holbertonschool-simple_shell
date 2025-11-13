@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <stdio.h>
+#include "puts.h"
 
 /**
  * get_cd_target - determine target directory for "cd"
