@@ -1,52 +1,36 @@
-#include "shell.h"
+#include "simple_shell.h"
 
 /**
- * main - Entry point for simple shell
- *
- * Return: Always 0
+ * main - entry point
+ * @argc: int
+ * @argv: arguments
+ * @envp: environment
+ * Return: exit status
  */
-int main(void)
+int main(int argc, char **argv, char **envp)
 {
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
-	char **args;
+	int exit;
+	shell_t *shell;
 
-	while (1)
+	exit = 0;
+
+	/* Duplicate environment before starting shell */
+	if (init_env(envp) == -1)
+		return (1);
+
+	shell = shell_init(0, (u8 *)argv[0], envp);
+	if (shell == 0)
 	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "$ ", 2);
-
-		read = getline(&line, &len, stdin);
-		if (read == -1)
-		{
-			free(line);
-			break;
-		}
-
-		line[_strlen(line) - 1] = '\0'; /* remove \n */
-		args = parse_command(line);
-
-		if (args[0] == NULL)
-		{
-			free(args);
-			continue;
-		}
-
-		if (_strcmp(args[0], "exit") == 0)
-		{
-			free(args);
-			break;
-		}
-		else if (_strcmp(args[0], "env") == 0)
-			print_env();
-		else
-			execute_command(args);
-
-		free(args);
+		free_env();
+		return (0);
 	}
 
-	free(line);
-	return (0);
-}
+	shell->exit = &exit;
+	shell_free(shell_runtime(shell));
 
+	/* Free duplicated environment at the end */
+	free_env();
+
+	(void)argc;
+	return (exit);
+}
