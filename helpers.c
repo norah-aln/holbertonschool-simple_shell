@@ -1,7 +1,10 @@
 #include "shell.h"
 
-/* Simple reimplementations of some string functions */
-
+/**
+ * _strlen - return length of a string
+ * @s: string
+ * Return: length
+ */
 int _strlen(char *s)
 {
 	int i = 0;
@@ -11,6 +14,12 @@ int _strlen(char *s)
 	return (i);
 }
 
+/**
+ * _strcmp - compare two strings
+ * @s1: first string
+ * @s2: second string
+ * Return: difference between characters
+ */
 int _strcmp(char *s1, char *s2)
 {
 	int i = 0;
@@ -24,6 +33,11 @@ int _strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
+/**
+ * _strdup - duplicate a string
+ * @str: input string
+ * Return: pointer to duplicated string
+ */
 char *_strdup(char *str)
 {
 	int len = _strlen(str);
@@ -39,6 +53,12 @@ char *_strdup(char *str)
 	return (dup);
 }
 
+/**
+ * _strcpy - copy a string
+ * @dest: destination
+ * @src: source
+ * Return: pointer to dest
+ */
 char *_strcpy(char *dest, char *src)
 {
 	int i = 0;
@@ -52,6 +72,12 @@ char *_strcpy(char *dest, char *src)
 	return (dest);
 }
 
+/**
+ * _strcat - concatenate two strings
+ * @dest: destination
+ * @src: source
+ * Return: pointer to dest
+ */
 char *_strcat(char *dest, char *src)
 {
 	int i = 0, j = 0;
@@ -68,9 +94,4 @@ char *_strcat(char *dest, char *src)
 	dest[i] = '\0';
 	return (dest);
 }
-
-/* إضافة _strchr حتى تعمل _strsplit */
-char *_strchr(char *s, char c)
-{
-	i
 

@@ -3,7 +3,7 @@ CFLAGS = -std=gnu89 -Wall -Werror -Wextra -pedantic -w
 SRC = main.c execute.c _strsplit.c io.c shell_logic.c path.c shell.c \
       builtin_cd.c builtin_setenv.c builtin_unsetenv.c env.c env_builtins.c \
       env_init.c env_utils.c memory.c set.c set_fns.c set_ops.c string_compare.c \
-      vector.c signal_handler.c shell_exit.c exit_utils.c puts.c helpers.c
+      vector.c signal_handler.c shell_exit.c exit_utils.c puts.c _strchr.c helpers.c
 
 
 
