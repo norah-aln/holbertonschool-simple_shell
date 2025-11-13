@@ -83,7 +83,8 @@ int _setenv(const char *name, const char *value, int overwrite)
 
 	for (i = 0; environ[i]; i++)
 	{
-		if (_strncmp_local(environ[i], name, nlen) == 0 && environ[i][nlen] == '=')
+		if (_strncmp_local(environ[i], name, nlen) == 0 &&
+		    environ[i][nlen] == '=')
 		{
 			if (!overwrite)
 				return (0);
@@ -126,4 +127,5 @@ int _setenv(const char *name, const char *value, int overwrite)
 	}
 
 	return (0);
-}	
+}
+

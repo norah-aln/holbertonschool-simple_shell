@@ -8,6 +8,7 @@
 static size_t _strlen_local(const char *s)
 {
 	size_t n = 0;
+
 	if (!s)
 		return (0);
 	while (s[n])
@@ -58,6 +59,7 @@ int init_env(char **envp)
 		if (!copy[i])
 		{
 			size_t j;
+
 			for (j = 0; j < i; j++)
 				free(copy[j]);
 			free(copy);
@@ -86,3 +88,4 @@ void free_env(void)
 	free(environ);
 	environ = NULL;
 }
+
