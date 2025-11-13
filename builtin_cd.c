@@ -4,11 +4,28 @@
 #include <stdio.h>
 
 /**
- * shell_cd_cmd - builtin "cd"
- * @s: shell_t ptr
+ * get_cd_target - determine target directory for "cd"
  * @args: argument list
  *
- * Return: shell_t ptr
+ * Return: pointer to target path or NULL
+ */
+char *get_cd_target(u8 **args)
+{
+	if (args[1] == NULL)
+		return (_getenv("HOME"));
+
+	if (_strcmp(args[1], (u8 *)"-") == 0)
+		return (_getenv("OLDPWD"));
+
+	return ((char *)args[1]);
+}
+
+/**
+ * shell_cd_cmd - builtin "cd" command
+ * @s: pointer to shell_t struct
+ * @args: argument list
+ *
+ * Return: pointer to shell_t struct
  */
 shell_t *shell_cd_cmd(shell_t *s, u8 **args)
 {
@@ -19,64 +36,32 @@ shell_t *shell_cd_cmd(shell_t *s, u8 **args)
 	if (!s || !args || !args[0])
 		return (s);
 
-	/* handle only "cd" */
 	if (_strcmp(args[0], (u8 *)"cd") != 0)
 		return (s);
 
-	/* save current directory */
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		cwd[0] = '\0';
 
-	/* case 1: cd with no argument -> go HOME */
-	if (args[1] == NULL)
-		target = _getenv("HOME");
-
-	/* case 2: cd - -> go OLDPWD */
-	else if (_strcmp(args[1], (u8 *)"-") == 0)
-{
-	target = _getenv("OLDPWD");
-	if (target)
-	{
- 
-		print_string(target);
-		print_char('\n');
-	}
-	else
-	{
- 
-		if (cwd[0] != '\0')
-		{
-			print_string(cwd);
-			print_char('\n');
-		}
-		return (s);
-	}
-}
-	/* case 3: cd <path> */
-	else
-		target = (char *)args[1];
+	target = get_cd_target(args);
 
 	if (target == NULL)
-{
-	/* silently ignore if HOME is missing (checker expects no error) */
-	return (s);
-}
+	{
+		_puts("cd: target not found\n");
+		return (s);
+	}
 
-
-	/* try to change directory */
 	rc = chdir(target);
 	if (rc == -1)
 	{
-		fprintf(stderr, "%s: 1: cd: can't cd to %s\n", s->name, target);
-		return (s);
+		perror("cd");
 	}
-
-	/* update environment variables */
-	if (cwd[0] != '\0')
+	else
+	{
 		_setenv("OLDPWD", cwd, 1);
-
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		_setenv("PWD", cwd, 1);
+		if (getcwd(cwd, sizeof(cwd)) != NULL)
+			_setenv("PWD", cwd, 1);
+	}
 
 	return (s);
 }
+

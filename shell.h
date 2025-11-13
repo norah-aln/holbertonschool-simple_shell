@@ -20,6 +20,7 @@ char **parse_command(char *line);
 void execute_command(char **args);
 char *find_path(char *cmd);
 void print_env(void);
+extern char **environ;
 
 #endif
 

@@ -1,9 +1,9 @@
 #include "shell.h"
 
-extern char **environ;
-
 /**
- * print_env - prints the environment variables
+ * print_env - prints all environment variables
+ *
+ * Return: nothing
  */
 void print_env(void)
 {
